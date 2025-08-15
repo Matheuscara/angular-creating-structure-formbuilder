@@ -1,60 +1,127 @@
-# Desafio2angular
+# 🛠️ Formulários Reativos Padronizados no Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.5.
+Uma abordagem opinativa para padronizar formulários reativos — do gerenciamento de estado à exibição de erros — trazendo consistência, clareza e manutenibilidade para projetos Angular.
 
-## Development server
+> "Cansado da anarquia nos formulários Angular? Vamos criar um padrão." — [Matheus Dias](https://www.linkedin.com/in/matheus-dias-cara/)
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
+## 📋 Índice
+
+* [Motivação](#-motivação)
+* [Arquitetura da Solução](#-arquitetura-da-solução)
+
+  * [1. FormBase](#1-formbase)
+  * [2. ErrorType](#2-errortype)
+  * [3. Implementação de Exemplo](#3-implementação-de-exemplo)
+* [Como Usar](#-como-usar)
+* [Benefícios](#-benefícios)
+* [Próximos Passos](#-próximos-passos)
+* [Autor](#-autor)
+
+---
+
+## 💡 Motivação
+
+Apesar do `FormBuilder` do Angular oferecer uma forma elegante de definir formulários reativos, falta um **padrão consistente** para:
+
+* Lidar com validações condicionais.
+* Centralizar exibição de mensagens de erro.
+* Padronizar reset e marcação de campos como tocados.
+
+Isso leva a **inconsistências** e **dificuldade de manutenção** em projetos grandes.
+A proposta deste repositório é criar **uma camada de abstração intermediária** que resolva esses problemas.
+
+---
+
+## 🏗 Arquitetura da Solução
+
+A solução se apoia em **3 pilares**:
+
+### 1. **FormBase**
+
+Classe abstrata que serve como contrato para todos os formulários:
+
+* Define métodos obrigatórios (`getInitialValues`, `errors`, `manageConditionalValidation`).
+* Centraliza lógica de reset, marcação de campos e gerenciamento de erros.
+* Usa **Generics** para tipagem forte.
+
+### 2. **ErrorType**
+
+Dicionário global de mensagens de erro:
+
+* Mapeia chaves de erro do Angular (`required`, `minlength`, etc.) para mensagens amigáveis.
+* Suporta **mensagens dinâmicas** via funções.
+* Pode ser sobrescrito por cada formulário específico.
+
+### 3. **Implementação de Exemplo — TransactionForm**
+
+Demonstra como criar um formulário real seguindo o padrão:
+
+* Aplica validação condicional para o campo `category`.
+* Isola toda a lógica de negócio do componente.
+* Facilita manutenção e legibilidade.
+
+---
+
+## 🚀 Como Usar
+
+1. **Criar um novo formulário**
+
+```ts
+export class MyForm extends FormBase<MyFormValues> {
+  override errors = new Map<string, string>();
+
+  override getInitialValues(): MyFormValues {
+    return { field1: '', field2: 0 };
+  }
+
+  override manageConditionalValidation(): void {
+    // Lógica condicional de validação aqui
+  }
+}
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+2. **Usar no componente**
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```ts
+constructor(private fb: FormBuilder) {
+  this.form = new MyForm(fb);
+  this.formGroup = this.form.form;
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3. **Exibir erros no template**
 
-```bash
-ng generate --help
+```html
+<app-input
+  label="Campo"
+  formControlName="field1"
+  [control]="form.controls.field1"
+  [errorMessage]="form.getErrorMessageAfterTouched('field1')"
+></app-input>
 ```
 
-## Building
+---
 
-To build the project run:
+## ✅ Benefícios
 
-```bash
-ng build
-```
+* **Consistência**: Todos os formulários seguem a mesma estrutura.
+* **Tipagem Forte**: Menos erros em tempo de desenvolvimento.
+* **Manutenibilidade**: Lógica de negócio separada da camada visual.
+* **Reutilização**: `FormBase` e `ErrorType` são compartilhados em todo o projeto.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## 📅 Próximos Passos
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+* [ ] Adicionar testes unitários para `FormBase`.
+* [ ] Criar exemplos para formulários complexos (com arrays e nested groups).
+* [ ] Implementar suporte para **Angular Signals** no gerenciamento de estado.
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## 👨‍💻 Autor
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-# angular-creating-structure-formbuilder
+**Matheus Dias**
+[LinkedIn](https://www.linkedin.com/in/matheus-dias-cara/) | [Medium](https://medium.com/@matheusdiasdev)
