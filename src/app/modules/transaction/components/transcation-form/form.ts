@@ -1,6 +1,7 @@
-import {FormBuilder, Validators, FormControl} from '@angular/forms';
-import {BaseForm} from '../../../../core/base/form.base';
+import {FormBuilder, Validators} from '@angular/forms';
+import {FormBase} from '../../../../core/base/form.base';
 import {Subscription} from 'rxjs';
+import {allowedValuesValidator} from '../../../../core/validators/form/allowed-values';
 
 interface TransactionFormValues {
   description: string;
@@ -10,26 +11,26 @@ interface TransactionFormValues {
   category: string | null;
 }
 
-export class Form extends BaseForm<TransactionFormValues> {
+export class Form extends FormBase<TransactionFormValues> {
   private valueChangesSub: Subscription = new Subscription;
 
   constructor(private fb: FormBuilder) {
     super(
       fb.group({
         description: ['', [Validators.required]],
-        amount: [0, [Validators.required, Validators.min(0.01)]],
-        type: new FormControl<'receita' | 'despesa'>('receita',
-          {nonNullable: true, validators: Validators.required}),
+        amount: [0, [Validators.required, Validators.min(0.01), Validators.max(10)]],
+        type:  ['receita', [Validators.required, allowedValuesValidator(['receita', 'despesa'])]],
         date: ['', [Validators.required]],
         category: [''],
-      })
+      }),
     );
 
 
     this.manageConditionalValidation();
   }
 
-  private manageConditionalValidation(): void {
+  override errors = new Map<string, string>();
+  override manageConditionalValidation(): void {
     const typeControl = this.controls.type;
     const categoryControl = this.controls.category;
 
@@ -53,7 +54,7 @@ export class Form extends BaseForm<TransactionFormValues> {
     };
   }
 
-  protected destroy(): void {
+  public destroy(): void {
     this.valueChangesSub.unsubscribe();
   }
 }

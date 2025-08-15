@@ -1,0 +1,13 @@
+<div class="input-wrapper">
+  <label [for]="id()">{{ label() }}</label>
+  <input
+    [id]="id()"
+    [type]="type()"
+    [value]="value"
+    (input)="onInputChange($event)"
+    (blur)="onBlur()"
+    [disabled]="control().disabled"
+    [ngClass]="{ 'invalid': control().invalid, 'valid': control().valid }"
+  />
+  <span class="error">{{ errorMessage() }}</span>
+</div>

@@ -1,66 +1,37 @@
-/**
- * @fileoverview Centraliza as mensagens de erro padrão para validações de formulários em toda a aplicação.
- *
- * Este objeto (`ErrorType`) funciona como um dicionário que mapeia chaves de erro do Angular
- * (ex: 'required', 'minlength') para mensagens de erro legíveis para o usuário.
- *
- * A principal vantagem desta abordagem é a capacidade de lidar tanto com mensagens estáticas (strings)
- * quanto com mensagens dinâmicas (funções), que podem incorporar valores do próprio erro
- * para fornecer um feedback mais preciso ao usuário.
- */
+import {ErrorType} from './error.enum';
 
-/**
- * @const ErrorType
- * @description Um registro (Record) que mapeia nomes de erros de validação para suas mensagens correspondentes.
- *
- * - **Chave (string):** O nome do erro retornado pelo validador do Angular (ex: `Validators.required` retorna um erro com a chave `'required'`).
- * - **Valor (string | function):**
- *   - **string:** Uma mensagem de erro estática e simples.
- *   - **function:** Uma função que recebe o objeto de erro como argumento e retorna uma string formatada.
- *     Isso é usado para erros que contêm informações contextuais, como o comprimento mínimo exigido ou o valor atual.
- *
- * Este objeto é consumido pela classe `FormBase` para traduzir os erros de validação em texto para a UI.
- */
-export const ErrorType: Record<string, string | ((error: any) => string)> = {
-  // --- Erros Padrão do Angular (Validators) ---
+describe('ErrorType', () => {
+  it('Should return message error when find a valid key', () => {
+    const errorType = ErrorType['required']
 
-  /** Mensagem para campos obrigatórios que não foram preenchidos. */
-  required: 'Este campo é obrigatório.',
+    expect(errorType).toBe('Este campo é obrigatório.');
+  })
 
-  /** Mensagem dinâmica para campos que não atingiram o comprimento mínimo de caracteres. */
-  minlength: (error: { requiredLength: number, actualLength: number }) =>
-    `O comprimento mínimo é de ${error.requiredLength} caracteres. Você digitou ${error.actualLength}.`,
+  it('Should return dinamic function parameter when value for minlength ', () => {
+    const fnErrorType = ErrorType['minlength'] as (err: any) => string;
+    const result = fnErrorType({requiredLength: 5, actualLength: 3});
 
-  /** Mensagem dinâmica para campos que excederam o comprimento máximo de caracteres. */
-  maxlength: (error: { requiredLength: number, actualLength: number }) =>
-    `O comprimento máximo é de ${error.requiredLength} caracteres. Você digitou ${error.actualLength}.`,
+    expect(result).toBe('O comprimento mínimo é de 5 caracteres. Você digitou 3.');
+  })
 
-  /** Mensagem dinâmica para campos numéricos cujo valor é menor que o mínimo permitido. */
-  min: (error: { min: number, actual: number }) =>
-    `O valor não pode ser menor que ${error.min}. Você digitou ${error.actual}.`,
+  it('Should return dinamic function parameter when value for maxlength ', () => {
+    const fnErrorType = ErrorType['maxlength'] as (err: any) => string;
+    const result = fnErrorType({requiredLength: 5, actualLength: 3});
 
-  /** Mensagem dinâmica para campos numéricos cujo valor é maior que o máximo permitido. */
-  max: (error: { max: number, actual: number }) =>
-    `O valor não pode ser maior que ${error.max}. Você digitou ${error.actual}.`,
+    expect(result).toBe(`O comprimento máximo é de 5 caracteres. Você digitou 3.`);
+  })
 
-  /** Mensagem para campos que deveriam conter um e-mail, mas o formato é inválido. */
-  email: 'Por favor, insira um endereço de e-mail válido.',
+  it('Should return dinamic function parameter when value for min ', () => {
+    const fnErrorType = ErrorType['min'] as (err: any) => string;
+    const result = fnErrorType({min: 5, actual: 3});
 
-  /** Mensagem para campos que não correspondem a uma expressão regular (pattern) definida. */
-  pattern: () =>
-    `O valor não corresponde ao padrão exigido.`,
+    expect(result).toBe(`O valor não pode ser menor que 5. Você digitou 3.`);
+  })
 
-  /** Mensagem genérica para validadores nulos ou erros inesperados. */
-  nullValidator: 'Valor inválido.',
+  it('Should return dinamic function parameter when value for max ', () => {
+    const fnErrorType = ErrorType['max'] as (err: any) => string;
+    const result = fnErrorType({max: 5, actual: 3});
 
-  /** Mensagem para validadores que comparam dois campos e encontram uma divergência (ex: confirmação de senha). */
-  mismatch: 'Os campos não coincidem.',
-
-
-  // --- Erros de Validadores Customizados ---
-
-  /** Mensagem para um validador customizado que restringe os valores permitidos em um campo. */
-  allowedValues: 'Este valor não é permitido.',
-
-  // Adicione aqui outras mensagens para seus validadores customizados...
-};
+    expect(result).toBe(`O valor não pode ser maior que 5. Você digitou 3.`);
+  })
+})

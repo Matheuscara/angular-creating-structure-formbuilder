@@ -1,59 +1,42 @@
+import {Form} from './form';
 import {FormBuilder, Validators} from '@angular/forms';
-import {FormBase} from '../../../../core/base/form.base';
-import {Subscription} from 'rxjs';
-import {allowedValuesValidator} from '../../../../core/validators/form/allowed-values';
 
-interface TransactionFormValues {
-  description: string;
-  amount: number;
-  type: 'receita' | 'despesa';
-  date: string;
-  category: string | null;
-}
+describe('Form', () => {
+  let form: Form;
 
-export class Form extends FormBase<TransactionFormValues> {
-  private valueChangesSub: Subscription = new Subscription;
+  beforeEach(() => {
+    form = new Form(new FormBuilder())
+  })
 
-  constructor(private fb: FormBuilder) {
-    super(
-      fb.group({
-        description: ['', [Validators.required]],
-        amount: [0, [Validators.required, Validators.min(0.01), Validators.max(10)]],
-        type:  ['receita', [Validators.required, allowedValuesValidator(['receita', 'despesa'])]],
-        date: ['', [Validators.required]],
-        category: [''],
-      }),
-    );
+  it('when input type changed to `despesa`, the input category should be required', () => {
+    const jasmineSpyValueChanges: jasmine.Spy = spyOn(form.controls.category, 'setValidators');
+    const errors = form.getControl('category').errors;
+    expect(errors).toEqual(null);
 
+    form.getControl('type').setValue('despesa');
 
-    this.manageConditionalValidation();
-  }
+    expect(jasmineSpyValueChanges).toHaveBeenCalledWith([Validators.required])
+  });
 
-  override errors = new Map<string, string>();
-  override manageConditionalValidation(): void {
-    const typeControl = this.controls.type;
-    const categoryControl = this.controls.category;
+  it('when input type changed to diferent value `despesa`, the input category should be required', () => {
+    const jasmineSpyValueChanges: jasmine.Spy = spyOn(form.controls.category, 'clearValidators');
+    const errors = form.getControl('category').errors;
+    expect(errors).toEqual(null);
 
-    this.valueChangesSub = typeControl.valueChanges.subscribe(type => {
-      if (type === 'despesa') {
-        categoryControl.setValidators([Validators.required]);
-      } else {
-        categoryControl.clearValidators();
-      }
-      categoryControl.updateValueAndValidity();
-    });
-  }
-  override getInitialValues(): TransactionFormValues {
-    return {
+    form.getControl('type').setValue('receita');
+
+    expect(jasmineSpyValueChanges).toHaveBeenCalledWith()
+  });
+
+  it('Return initial values of the model', () => {
+    const initialValue = form.getInitialValues();
+
+    expect(initialValue).toEqual({
       description: '',
       amount: 0,
       type: 'receita',
       date: '',
       category: null
-    };
-  }
-
-  public destroy(): void {
-    this.valueChangesSub.unsubscribe();
-  }
-}
+    })
+  })
+})

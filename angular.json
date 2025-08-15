@@ -70,6 +70,10 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
+            "codeCoverage": true,
+            "codeCoverageExclude": [
+              "**/*base.ts"
+            ],
             "polyfills": [
               "zone.js",
               "zone.js/testing"
@@ -88,5 +92,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "ada4f0cf-91ea-4e81-bfad-94b33c93d64c"
   }
 }

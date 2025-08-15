@@ -1,0 +1,49 @@
+<section>
+  <form [formGroup]="formGroup" (ngSubmit)="sendForm()">
+
+    <app-input
+      formControlName="description"
+      id="description"
+      label="Description"
+      [errorMessage]="form.getErrorMessageAfterTouched('description')"
+      [control]="form.getControl('description')"
+    ></app-input>
+
+    <app-input
+      formControlName="amount"
+      id="amount"
+      label="Amount"
+      type="number"
+      [errorMessage]="form.getErrorMessageAfterTouched('amount')"
+      [control]="form.getControl('amount')"
+    ></app-input>
+
+    <app-input
+      formControlName="type"
+      id="type"
+      label="Type"
+      [errorMessage]="form.getErrorMessageAfterTouched('type')"
+      [control]="form.getControl('type')"
+    ></app-input>
+
+    <app-input
+      formControlName="date"
+      id="date"
+      label="Date"
+      type="date"
+      [errorMessage]="form.getErrorMessageAfterTouched('date')"
+      [control]="form.getControl('date')"
+    ></app-input>
+
+    <app-input
+      formControlName="category"
+      id="category"
+      label="Category"
+      [errorMessage]="form.getErrorMessageAfterTouched('category')"
+      [control]="form.getControl('category')"
+    ></app-input>
+
+    <button [disabled]="!this.form.valid" type="submit">Submit</button>
+
+  </form>
+</section>
