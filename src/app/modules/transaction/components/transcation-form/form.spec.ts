@@ -37,7 +37,8 @@ describe('Form', () => {
       type: 'receita',
       date: '',
       category: null,
-      notes: ''
+      notes: '',
+      priority: ''
     })
   })
 
@@ -51,5 +52,17 @@ describe('Form', () => {
     const formValue = form.value;
     
     expect(formValue.notes).toBe('Test note');
+  })
+
+  it('should have priority field in form controls', () => {
+    expect(form.controls.priority).toBeDefined();
+    expect(form.getControl('priority').value).toBe('');
+  })
+
+  it('should include priority field when getting form value', () => {
+    form.patch({ priority: 'High' });
+    const formValue = form.value;
+    
+    expect(formValue.priority).toBe('High');
   })
 })
