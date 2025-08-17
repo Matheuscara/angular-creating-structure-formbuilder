@@ -10,6 +10,7 @@ interface TransactionFormValues {
   date: string;
   category: string | null;
   notes: string;
+  priority: string;
 }
 
 export class Form extends FormBase<TransactionFormValues> {
@@ -24,6 +25,7 @@ export class Form extends FormBase<TransactionFormValues> {
         date: ['', [Validators.required]],
         category: [''],
         notes: [''],
+        priority: [''],
       }),
     );
 
@@ -53,7 +55,8 @@ export class Form extends FormBase<TransactionFormValues> {
       type: 'receita',
       date: '',
       category: null,
-      notes: ''
+      notes: '',
+      priority: ''
     };
   }
 

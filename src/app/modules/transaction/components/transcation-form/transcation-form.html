@@ -51,6 +51,14 @@
       [control]="form.getControl('notes')"
     ></app-input>
 
+    <app-input
+      formControlName="priority"
+      id="priority"
+      label="Priority"
+      [errorMessage]="form.getErrorMessageAfterTouched('priority')"
+      [control]="form.getControl('priority')"
+    ></app-input>
+
     <button [disabled]="!this.form.valid" type="submit">Submit</button>
 
   </form>
