@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TranscationForm} from './transcation-form';
+import {provideZonelessChangeDetection} from '@angular/core';
 
 describe('TranscationForm', () => {
   let component: TranscationForm;
@@ -8,7 +9,8 @@ describe('TranscationForm', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TranscationForm]
+      imports: [TranscationForm],
+      providers: [provideZonelessChangeDetection()]
     })
       .compileComponents();
 

@@ -1,12 +1,20 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {
+  ApplicationConfig, isDevMode,
+  provideBrowserGlobalErrorListeners, provideCheckNoChangesConfig, provideZoneChangeDetection,
+  provideZonelessChangeDetection
+} from '@angular/core';
+import {provideRouter} from '@angular/router';
 
-import { routes } from './app.routes';
+import {routes} from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes)
+    provideZonelessChangeDetection(),
+    provideRouter(routes),
+    isDevMode() ? provideCheckNoChangesConfig({
+      exhaustive: true,
+      interval: 1000
+    }) : [],
   ]
 };

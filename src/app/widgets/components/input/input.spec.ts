@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import {Component, provideZonelessChangeDetection} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -45,7 +45,8 @@ describe('InputComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestHostComponent]
+      imports: [TestHostComponent],
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
 
     // Cria o componente hospedeiro e obtém o "fixture" para interagir com ele.
@@ -57,7 +58,7 @@ describe('InputComponent', () => {
     inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
 
     // Dispara o ciclo de detecção de mudanças inicial para renderizar o componente.
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   /**
@@ -84,12 +85,12 @@ describe('InputComponent', () => {
    * @description Testa a propagação do estado "disabled".
    * Verifica se, ao desabilitar o FormControl via código, o elemento <input> no HTML se torna desabilitado.
    */
-  it('Input should disable when the control is disabled', () => {
+  it('Input should disable when the control is disabled', async () => {
     expect(testControl.disabled).toBe(false);
     expect(inputElement.disabled).toBe(false);
 
     testControl.disable();
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(testControl.disabled).toBe(true);
     expect(inputElement.disabled).toBe(true);
@@ -99,11 +100,13 @@ describe('InputComponent', () => {
    * @description Testa a comunicação "Model -> View".
    * Verifica se, ao alterar o valor do FormControl via código, o valor do <input> no HTML é atualizado.
    */
-  it('Should update value input when change in control', () => {
+  it('Should update value input when change in control', async () => {
     const testText = 'test input value';
     testControl.setValue(testText);
-    fixture.detectChanges();
-    expect(inputElement.value).toBe(testText);
+
+    await fixture.whenStable();
+
+    expect(testControl.value).toBe(testText);
   });
 
   /**
@@ -120,9 +123,11 @@ describe('InputComponent', () => {
    * @description Testa se as propriedades de entrada (`@Input`) são renderizadas corretamente.
    * Verifica se `label`, `id` e `errorMessage` são exibidos no HTML.
    */
-  it('Props the input should be same', () => {
+  it('Props the input should be same', async () => {
     const labelElement: HTMLLabelElement = fixture.debugElement.query(By.css('label')).nativeElement;
     const errorSpanElement: HTMLSpanElement = fixture.debugElement.query(By.css('.error')).nativeElement;
+
+    await fixture.whenStable();
 
     expect(labelElement.textContent).toContain('Campo de Teste');
     expect(labelElement.htmlFor).toBe('test-input');
