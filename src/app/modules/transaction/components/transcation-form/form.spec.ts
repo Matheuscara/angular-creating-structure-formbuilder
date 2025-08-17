@@ -36,7 +36,20 @@ describe('Form', () => {
       amount: 0,
       type: 'receita',
       date: '',
-      category: null
+      category: null,
+      notes: ''
     })
+  })
+
+  it('should have notes field in form controls', () => {
+    expect(form.controls.notes).toBeDefined();
+    expect(form.getControl('notes').value).toBe('');
+  })
+
+  it('should include notes field when getting form value', () => {
+    form.patch({ notes: 'Test note' });
+    const formValue = form.value;
+    
+    expect(formValue.notes).toBe('Test note');
   })
 })
