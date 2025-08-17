@@ -43,6 +43,14 @@
       [control]="form.getControl('category')"
     ></app-input>
 
+    <app-input
+      formControlName="notes"
+      id="notes"
+      label="Notes"
+      [errorMessage]="form.getErrorMessageAfterTouched('notes')"
+      [control]="form.getControl('notes')"
+    ></app-input>
+
     <button [disabled]="!this.form.valid" type="submit">Submit</button>
 
   </form>
